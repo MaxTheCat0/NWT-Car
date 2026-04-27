@@ -40,6 +40,18 @@ digitalWrite(9,LOW);
 
 }
 void loop(){
+Vor();
+
+digitalWrite(4,LOW);
+delayMicroseconds(2);
+digitalWrite(4,HIGH);
+long duration = pulseIn(5,HIGH);
+int distance = duration * 0.034 / 2; 
+Serial.print(distance);
+if(distance < 21){
+Stop();
+}
+
 
 
 }
