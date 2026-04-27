@@ -1,3 +1,42 @@
 Code 
+#include <Servo.h>
+
+   //#define TRIG 4
+   //#define ECHO 5
+   
+   //#define I_6 6
+   //#define I_7 7
+   //#define I_8 8
+   //#define I_9 9
+
 void setup(){
-pinMode(4,OUTPUT)
+pinMode(4,OUTPUT);
+pinMode(5,INPUT);
+
+pinMode(6,OUTPUT);
+pinMode(7,OUTPUT);
+pinMode(8,OUTPUT);
+pinMode(9,OUTPUT);
+
+
+
+
+}
+
+void Stop(){
+digitalWrite(6,LOW);
+digitalWrite(7,LOW);
+digitalWrite(8,LOW);
+digitalWrite(9,LOW);
+
+}
+
+
+void loop(){
+digitalWrite(6,LOW);
+digitalWrite(7,HIGH);
+digitalWrite(8,HIGH);
+digitalWrite(9,LOW);
+
+
+}
