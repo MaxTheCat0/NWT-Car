@@ -18,8 +18,7 @@ pinMode(7,OUTPUT);
 pinMode(8,OUTPUT);
 pinMode(9,OUTPUT);
 
-
-
+Serial.begin(9600);
 
 }
 
@@ -32,11 +31,15 @@ digitalWrite(9,LOW);
 }
 
 
-void loop(){
+void Vor(){
 digitalWrite(6,LOW);
 digitalWrite(7,HIGH);
 digitalWrite(8,HIGH);
 digitalWrite(9,LOW);
+
+
+}
+void loop(){
 
 
 }
