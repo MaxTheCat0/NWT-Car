@@ -41,7 +41,7 @@ digitalWrite(9,LOW);
 
 }
 void loop(){
-
+infrarot sensor 
 
 digitalWrite(4, LOW);
 delay(2);
