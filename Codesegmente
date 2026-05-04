@@ -5,6 +5,16 @@ digitalWrite(7,LOW);
 digitalWrite(8,LOW);
 digitalWrite(9,LOW); 
 
-ultraschall sensor 
+ultraschall sensor
+
+digitalWrite(4, LOW);
+delay(2);
+digitalWrite(4, HIGH);
+delay(10);
+digitalWrite(4, LOW);
+long duration = pulseIn(5, HIGH);
+distance = duration * 0.034 / 2; 
+Serial.print(distance); 
+
 
 infrarot sensor 
