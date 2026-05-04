@@ -1,4 +1,10 @@
+auto stop 
+
 digitalWrite(6,LOW);
 digitalWrite(7,LOW);
 digitalWrite(8,LOW);
 digitalWrite(9,LOW); 
+
+ultraschall sensor 
+
+infrarot sensor 
