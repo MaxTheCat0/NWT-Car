@@ -1,0 +1,54 @@
+long duration; 
+int distance;
+#include <Servo.h>
+
+   //#define TRIG 4
+   //#define ECHO 2
+   
+   //#define I_6 6
+   //#define I_7 7
+   //#define I_8 8
+   //#define I_9 9
+
+void setup(){
+pinMode(4,OUTPUT);//TRIG
+pinMode(2,INPUT);//ECHO
+
+pinMode(5,OUTPUT);
+pinMode(6,OUTPUT);
+pinMode(9,OUTPUT);
+pinMode(10,OUTPUT);
+
+Serial.begin(9600);
+
+}
+
+
+
+void loop(){
+//infrarot sensor 
+
+
+digitalWrite(4, HIGH);
+delayMicroseconds(10);
+digitalWrite(4, LOW);
+duration = pulseIn(2, HIGH);
+distance = duration *0.038/2; 
+Serial.println(distance);
+if(distance < 31){
+
+//Servo
+analogWrite(5,0);
+analogWrite(6,0);
+analogWrite(9,0);
+analogWrite(10,0);
+} else {
+analogWrite(5,100);
+analogWrite(6,100);
+analogWrite(9,0);
+analogWrite(10,0);
+}
+
+
+
+}
