@@ -1,25 +1,22 @@
 long duration; 
 int distance;
-#include <Servo.h>
+int i1 = 5;
+int i2 = 6;
+int i3 = 9;
+int i4 = 10;
 
-   //#define TRIG 4
-   //#define ECHO 2
-   
-   //#define I_6 6
-   //#define I_7 7
-   //#define I_8 8
-   //#define I_9 9
+#include <Servo.h>
 
 void setup(){
 pinMode(4,OUTPUT);//TRIG
 pinMode(2,INPUT);//ECHO
 
-pinMode(5,OUTPUT);
-pinMode(6,OUTPUT);
-pinMode(9,OUTPUT);
-pinMode(10,OUTPUT);
+pinMode(i1,OUTPUT);
+pinMode(i2,OUTPUT);
+pinMode(i3,OUTPUT);
+pinMode(i4,OUTPUT);
 
-pinMode(irpin,INPUT);
+pinMode(12,INPUT);
 Serial.begin(9600);
 
 }
@@ -27,8 +24,13 @@ Serial.begin(9600);
 
 
 void loop(){
-//infrarot sensor 
-
+int IRValue = digitalRead(12);
+  if (IRValue == HIGH) {
+    analogWrite(i1,100);
+    analogWrite(i2,100);
+    analogWrite(i3,0);
+    analogWrite(i4,0);
+  }
 
 digitalWrite(4, HIGH);
 delayMicroseconds(10);
@@ -39,15 +41,15 @@ Serial.println(distance);
 if(distance < 31){
 
 //Servo
-analogWrite(5,0);
-analogWrite(6,0);
-analogWrite(9,0);
-analogWrite(10,0);
+analogWrite(i1,0);
+analogWrite(i2,0);
+analogWrite(i3,0);
+analogWrite(i4,0);
 } else {
-analogWrite(5,100);
-analogWrite(6,100);
-analogWrite(9,0);
-analogWrite(10,0);
+analogWrite(i1,100);
+analogWrite(i2,100);
+analogWrite(i3,0);
+analogWrite(i4,0);
 }
 
 
