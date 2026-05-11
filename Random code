@@ -1,0 +1,59 @@
+int trigger= 2;
+int echo=4;
+long dauer=0;
+long entfernung=0;
+int in1=6;
+int in2=10;
+int in3=11;
+int in4=9;
+int sensorLinks = 5;
+int sensorRechts = 8;
+int Fotowiderstand = A0;
+int SchwelleDunkelheit = 100;
+
+void setup () {
+Serial.begin (9600);
+pinMode (5, INPUT);
+pinMode (8, INPUT);
+pinMode (in1,OUTPUT);
+pinMode (in2,OUTPUT);
+pinMode (in3,OUTPUT);
+pinMode (in4,OUTPUT);
+pinMode (trigger,OUTPUT);
+pinMode (echo,INPUT);
+pinMode(sensorLinks, INPUT);
+pinMode(sensorRechts, INPUT);
+}
+
+
+void loop () {
+int SensorWert = analogRead(Fotowiderstand);
+Serial.print(SensorWert);
+if (SensorWert< SchwelleDunkelheit)
+{}
+digitalWrite (trigger, LOW);
+delay (5);
+digitalWrite (trigger, HIGH);
+delay(10);
+digitalWrite (trigger, LOW);
+dauer=pulseIn (echo,HIGH);
+entfernung= (dauer/2)*0.03432;
+Serial.println (entfernung);
+
+if (entfernung < 40)
+{
+analogWrite (in1,0);
+analogWrite(in2,0);
+analogWrite (in3,0);
+analogWrite(in4,0);
+}
+else {
+analogWrite (in1,0); //links
+analogWrite(in2,60);
+analogWrite (in3,0); //rechts
+analogWrite(in4,60);
+
+}
+int links = digitalRead(sensorLinks);
+int rechts = digitalRead(sensorRechts);
+}
