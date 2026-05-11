@@ -19,6 +19,7 @@ pinMode(6,OUTPUT);
 pinMode(9,OUTPUT);
 pinMode(10,OUTPUT);
 
+pinMode(irpin,INPUT);
 Serial.begin(9600);
 
 }
