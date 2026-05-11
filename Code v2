@@ -5,7 +5,7 @@ int i2 = 6;
 int i3 = 9;
 int i4 = 10;
 
-#include <Servo.h>
+
 
 void setup(){
 pinMode(4,OUTPUT);//TRIG
@@ -24,23 +24,29 @@ Serial.begin(9600);
 
 
 void loop(){
-int IRValue = digitalRead(12);
-  if (IRValue == HIGH) {
-    analogWrite(i1,100);
-    analogWrite(i2,100);
-    analogWrite(i3,0);
-    analogWrite(i4,0);
-  }
+//int IRValue = digitalRead(12);
+  //if (IRValue == LOW) {
+    //analogWrite(i1,100);
+    //analogWrite(i2,100);
+    //analogWrite(i3,0);
+    //analogWrite(i4,0);
+  //}  
+   
+   //if (IRValue == HIGH) {
+    //analogWrite(i1,0);
+    //analogWrite(i2,0);
+    //analogWrite(i3,0);
+    //analogWrite(i4,0);
+  //}  
 
-digitalWrite(4, HIGH);
+
+digitalWrite(4,HIGH);
 delayMicroseconds(10);
-digitalWrite(4, LOW);
-duration = pulseIn(2, HIGH);
+digitalWrite(4,LOW);
+duration = pulseIn(2,HIGH);
 distance = duration *0.038/2; 
 Serial.println(distance);
 if(distance < 31){
-
-//Servo
 analogWrite(i1,0);
 analogWrite(i2,0);
 analogWrite(i3,0);
