@@ -18,3 +18,45 @@ Serial.print(distance);
 
 
 infrarot sensor 
+// Pin-Definitionen
+const int leftSensorPin = 2;  // Linker IR-Sensor an Pin 2
+const int rightSensorPin = 3; // Rechter IR-Sensor an Pin 3
+
+// Motor-Pins (Beispiel mit L298N/L293D)
+const int motorLeftForward = 5;
+const int motorRightForward = 6;
+
+void setup() {
+  pinMode(leftSensorPin, INPUT);
+  pinMode(rightSensorPin, INPUT);
+  pinMode(motorLeftForward, OUTPUT);
+  pinMode(motorRightForward, OUTPUT);
+}
+
+void loop() {
+  int leftValue = digitalRead(leftSensorPin);
+  int rightValue = digitalRead(rightSensorPin);
+
+  // Fall 1: Beide Sensoren auf Weiß -> Vorwärts
+  if (leftValue == HIGH && rightValue == HIGH) {
+    moveForward();
+  }
+  // Fall 2: Linker Sensor auf Schwarz -> Nach links korrigieren
+  else if (leftValue == LOW && rightValue == HIGH) {
+    turnLeft();
+  }
+  // Fall 3: Rechter Sensor auf Schwarz -> Nach rechts korrigieren
+  else if (leftValue == HIGH && rightValue == LOW) {
+    turnRight();
+  }
+  // Fall 4: Beide auf Schwarz (Kreuzung) -> Anhalten oder Vorwärts
+  else if (leftValue == LOW && rightValue == LOW) {
+    stopMotors();
+  }
+}
+
+// Hilfsfunktionen für Motorsteuerung (anpassen an eigene Motoren)
+void moveForward() { /* ... */ }
+void turnLeft() { /* ... */ }
+void turnRight() { /* ... */ }
+void stopMotors() { /* ... */ }
