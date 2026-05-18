@@ -1,4 +1,4 @@
-auto stop 
+auto stop //pins sind ned richtig
 
 digitalWrite(6,LOW);
 digitalWrite(7,LOW);
