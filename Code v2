@@ -16,7 +16,7 @@ pinMode(i2,OUTPUT);
 pinMode(i3,OUTPUT);
 pinMode(i4,OUTPUT);
 
-pinMode(12,INPUT);
+pinMode(A1,INPUT);
 Serial.begin(9600);
 
 }
@@ -24,15 +24,15 @@ Serial.begin(9600);
 
 
 void loop(){
-int IRValue = digitalRead(12);
-  if (IRValue == LOW) {
-    analogWrite(i1,100);
-    analogWrite(i2,0);
-    analogWrite(i3,100);
-    analogWrite(i4,0);
+int IRValue = analogRead(A1);
+  if (IRValue < 300) {
+    analogWrite(i1,0);
+    analogWrite(i2,100);
+    analogWrite(i3,0);
+    analogWrite(i4,100);
   }  
    
-   if (IRValue == HIGH) {
+   if (IRValue > 300) {
     analogWrite(i1,0);
     analogWrite(i2,0);
     analogWrite(i3,0);
@@ -52,10 +52,10 @@ analogWrite(i2,0);
 analogWrite(i3,0);
 analogWrite(i4,0);
 } else {
-analogWrite(i1,100);
-analogWrite(i2,0);
-analogWrite(i3,100);
-analogWrite(i4,0);
+analogWrite(i1,0);
+analogWrite(i2,100);
+analogWrite(i3,0);
+analogWrite(i4,100);
 }
 
 
