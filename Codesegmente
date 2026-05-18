@@ -5,6 +5,8 @@ digitalWrite(7,LOW);
 digitalWrite(8,LOW);
 digitalWrite(9,LOW); 
 
+auto vorwärts 5 9 high 
+
 ultraschall sensor
 
 digitalWrite(4, LOW);
