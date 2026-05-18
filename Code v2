@@ -24,20 +24,20 @@ Serial.begin(9600);
 
 
 void loop(){
-//int IRValue = digitalRead(12);
-  //if (IRValue == LOW) {
-    //analogWrite(i1,100);
-    //analogWrite(i2,100);
-    //analogWrite(i3,0);
-    //analogWrite(i4,0);
-  //}  
+int IRValue = digitalRead(12);
+  if (IRValue == LOW) {
+    analogWrite(i1,100);
+    analogWrite(i2,0);
+    analogWrite(i3,100);
+    analogWrite(i4,0);
+  }  
    
-   //if (IRValue == HIGH) {
-    //analogWrite(i1,0);
-    //analogWrite(i2,0);
-    //analogWrite(i3,0);
-    //analogWrite(i4,0);
-  //}  
+   if (IRValue == HIGH) {
+    analogWrite(i1,0);
+    analogWrite(i2,0);
+    analogWrite(i3,0);
+    analogWrite(i4,0);
+  }  
 
 
 digitalWrite(4,HIGH);
@@ -53,8 +53,8 @@ analogWrite(i3,0);
 analogWrite(i4,0);
 } else {
 analogWrite(i1,100);
-analogWrite(i2,100);
-analogWrite(i3,0);
+analogWrite(i2,0);
+analogWrite(i3,100);
 analogWrite(i4,0);
 }
 
