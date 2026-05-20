@@ -1,63 +1,93 @@
-long duration; 
+const int TRIG_PIN = 4;
+const int ECHO_PIN = 2;
+
+const int IR_PIN = A1;
+
+// motor pins (für mich das ich besser check (dachte am anfang das sind LED's)) ABER BENENNE DEINE VARIABLEN BESSER
+const int i1 = 5;
+const int i2 = 6;
+const int i3 = 9;
+const int i4 = 10;
+
+long duration;
 int distance;
-int i1 = 5;
-int i2 = 6;
-int i3 = 9;
-int i4 = 10;
 
+void AutoVor();
 
+void AutoStop();
 
-void setup(){
-pinMode(4,OUTPUT);//TRIG
-pinMode(2,INPUT);//ECHO
+void AutoRueckwaerts();
 
-pinMode(i1,OUTPUT);
-pinMode(i2,OUTPUT);
-pinMode(i3,OUTPUT);
-pinMode(i4,OUTPUT);
+void AutoRechts();
 
-pinMode(A1,INPUT);
-Serial.begin(9600);
+void AutoLinks();
 
+void correctCourse(); /* funktionen deklariert man in der regen in cpp erst am ende des codes
+                        um struktur zu geben und kleiner tipp probier beim benennen von funktionen
+                        immer mit einem verb anzufangen ;)*/
+void setup()
+{
+    pinMode(TRIG_PIN, OUTPUT);
+    pinMode(ECHO_PIN, INPUT);
+
+    pinMode(i1, OUTPUT);
+    pinMode(i2, OUTPUT);
+    pinMode(i3, OUTPUT);
+    pinMode(i4, OUTPUT);
+
+    pinMode(IR_PIN, INPUT);
+
+    Serial.begin(9600);
 }
 
-
-
-void loop(){
-int IRValue = analogRead(A1);
-  if (IRValue < 300) {
+void AutoVor(){
     analogWrite(i1,0);
     analogWrite(i2,100);
     analogWrite(i3,0);
     analogWrite(i4,100);
-  }  
-   
-   if (IRValue > 300) {
-    analogWrite(i1,0);
-    analogWrite(i2,0);
-    analogWrite(i3,0);
-    analogWrite(i4,0);
-  }  
+}
 
+void AutoStop(){
+     analogWrite(i1,0);
+     analogWrite(i2,0);
+     analogWrite(i3,0);
+     analogWrite(i4,0);
+}
 
-digitalWrite(4,HIGH);
-delayMicroseconds(10);
-digitalWrite(4,LOW);
-duration = pulseIn(2,HIGH);
-distance = duration *0.038/2; 
-Serial.println(distance);
-if(distance < 31){
-analogWrite(i1,0);
-analogWrite(i2,0);
-analogWrite(i3,0);
-analogWrite(i4,0);
-} else {
-analogWrite(i1,0);
-analogWrite(i2,100);
-analogWrite(i3,0);
-analogWrite(i4,100);
+void AutoRueckwaerts(){
+     analogWrite(i1,100);
+     analogWrite(i2,0);
+     analogWrite(i3,100);
+     analogWrite(i4,0);
 }
 
 
 
+void loop()
+{
+    /*const*/ int IRValue = digitalRead(IR_PIN); // falls du das nicht mehr änderst bnutze const int
+
+    digitalWrite(TRIG_PIN, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TRIG_PIN, LOW);
+    duration = pulseIn(ECHO_PIN, HIGH);
+    distance = duration * 0.034 / 2; // hast btw die formel falscxh gehabt du hattest statt '0.034' '0.038'
+
+    Serial.print("\n\n\ndistance: "); // einfach nur zum testen
+    Serial.print(distance);           //
+    Serial.print(" cm\nIR-status: "); //
+    Serial.print(IRValue);            //
+
+    // bei deinem code achtetr er garnicht darauf ob er überhaupt noch hauf der linie ist
+    if (distance > 30 && IRValue == HIGH) // falls es nicht funktioniert mach mal aus 'HIGH' einfach '1' und aus 'LOW' '0'
+    {
+        // weg frei dings fährt los
+      AutoVor();
+    }
+    else
+    {
+      AutoStop();
+    }
+
+    delay(50); // bau ab und zu kleine pausen ein um dem arduino bissle schnaufpausen zu geben ;)
 }
