@@ -79,7 +79,8 @@ void AutoLinks(){
 
 void loop()
 {
-    const int IRValueLinks = digitalRead(IR_PIN); // falls du das nicht mehr änderst bnutze const int
+    const int IRValueLinks = digitalRead(IR_PIN_Links); // falls du das nicht mehr änderst bnutze const int
+    const int IRValueRechts = digitalRead(IR_PIN_Rechts); 
 
     digitalWrite(TRIG_PIN, HIGH);
     delayMicroseconds(10);
@@ -93,7 +94,7 @@ void loop()
     Serial.print(IRValueLinks);            //
 
     // bei deinem code achtetr er garnicht darauf ob er überhaupt noch hauf der linie ist
-    if (distance > 30 && IRValue == LOW) // falls es nicht funktioniert mach mal aus 'HIGH' einfach '1' und aus 'LOW' '0'
+    if (distance > 30 && IRValueLinks == LOW && IRValueRechts == LOW) // falls es nicht funktioniert mach mal aus 'HIGH' einfach '1' und aus 'LOW' '0'
     {
         // weg frei dings fährt los
       AutoVor();
