@@ -85,7 +85,7 @@ void loop()
     duration = pulseIn(ECHO_PIN, HIGH);
     distance = duration * 0.034 / 2; // hast btw die formel falscxh gehabt du hattest statt '0.034' '0.038'
 
-    //Serial.print("\n\n\ndistance: "); // einfach nur zum testen
+    Serial.print("\n\n\ndistance: "); // einfach nur zum testen
     Serial.print(distance);           //
     Serial.print(" cm\nIR-status: "); //
     Serial.print(IRValue);            //
