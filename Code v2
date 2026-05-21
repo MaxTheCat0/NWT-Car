@@ -3,7 +3,7 @@ const int ECHO_PIN = 2;
 
 const int IR_PIN = A1;
 
-// motor pins (für mich das ich besser check (dachte am anfang das sind LED's)) ABER BENENNE DEINE VARIABLEN BESSER
+// motor pins (für mich das ich besser check (dachte am anfang das sind LED's))
 const int i1 = 5;
 const int i2 = 6;
 const int i3 = 9;
@@ -61,11 +61,23 @@ void AutoRueckwaerts(){
      analogWrite(i4,0);
 }
 
+void AutoRechts(){
+    analogWrite(i1,0);
+    analogWrite(i2,100);
+    analogWrite(i3,100);
+    analogWrite(i4,0);
+}
 
+void AutoLinks(){
+    analogWrite(i1,100);
+    analogWrite(i2,0);
+    analogWrite(i3,0);
+    analogWrite(i4,100);
+}
 
 void loop()
 {
-    /*const*/ int IRValue = digitalRead(IR_PIN); // falls du das nicht mehr änderst bnutze const int
+    const int IRValue = digitalRead(IR_PIN); // falls du das nicht mehr änderst bnutze const int
 
     digitalWrite(TRIG_PIN, HIGH);
     delayMicroseconds(10);
@@ -73,13 +85,13 @@ void loop()
     duration = pulseIn(ECHO_PIN, HIGH);
     distance = duration * 0.034 / 2; // hast btw die formel falscxh gehabt du hattest statt '0.034' '0.038'
 
-    Serial.print("\n\n\ndistance: "); // einfach nur zum testen
+    //Serial.print("\n\n\ndistance: "); // einfach nur zum testen
     Serial.print(distance);           //
     Serial.print(" cm\nIR-status: "); //
     Serial.print(IRValue);            //
 
     // bei deinem code achtetr er garnicht darauf ob er überhaupt noch hauf der linie ist
-    if (distance > 30 && IRValue == HIGH) // falls es nicht funktioniert mach mal aus 'HIGH' einfach '1' und aus 'LOW' '0'
+    if (distance > 30 && IRValue == LOW) // falls es nicht funktioniert mach mal aus 'HIGH' einfach '1' und aus 'LOW' '0'
     {
         // weg frei dings fährt los
       AutoVor();
