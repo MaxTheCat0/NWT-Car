@@ -23,9 +23,12 @@ void AutoRechts();
 
 void AutoLinks();
 
-void correctCourse(); /* funktionen deklariert man in der regen in cpp erst am ende des codes
+void correctCourseLinkerIR(); /* funktionen deklariert man in der regen in cpp erst am ende des codes
                         um struktur zu geben und kleiner tipp probier beim benennen von funktionen
                         immer mit einem verb anzufangen ;)*/
+
+void correctCourseRechterIR();
+
 void setup()
 {
     pinMode(TRIG_PIN, OUTPUT);
