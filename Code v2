@@ -1,10 +1,12 @@
+#include <Servo.h>
+
 const int TRIG_PIN = 4;
 const int ECHO_PIN = 2;
 
 const int IR_PIN_Links = A1;
 const int IR_PIN_Rechts = A2;
 
-// motor pins (für mich das ich besser check (dachte am anfang das sind LED's))
+// motor pins
 const int i1 = 5;
 const int i2 = 6;
 const int i3 = 9;
@@ -41,9 +43,51 @@ void setup()
     pinMode(IR_PIN_Links, INPUT);
     pinMode(IR_PIN_Rechts, INPUT);
 
-    Serial.begin(9600);
+    Serial.begin(9600); // Zum checken von Ultraschal und IR
 
     servo.attach(ServoPin);
+    
+}
+
+void loop()
+{
+    const int IRValueLinks = digitalRead(IR_PIN_Links); // falls du das nicht mehr änderst bnutze const int
+    const int IRValueRechts = digitalRead(IR_PIN_Rechts); 
+
+    digitalWrite(TRIG_PIN, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TRIG_PIN, LOW);
+    duration = pulseIn(ECHO_PIN, HIGH);
+    distance = duration * 0.034 / 2; // hast btw die formel falscxh gehabt du hattest statt '0.034' '0.038'
+
+    Serial.print("\n\n\ndistance: "); // einfach nur zum testen
+    Serial.print(distance);           
+    Serial.print(" cm\nIR-status: "); 
+    Serial.print(IRValueLinks);            
+
+    if (distance > 30 && IRValueLinks == LOW && IRValueRechts == LOW) // falls es nicht funktioniert mach mal aus 'HIGH' einfach '1' und aus 'LOW' '0'
+    {
+      AutoVor();
+    }
+    else if (distance > 30 && IRValueLinks == HIGH && IRValueRechts == LOW)
+    {
+      AutoLinks();
+    }
+   else if (distance > 30 && IRValueLinks == LOW && IRValueRechts == HIGH)
+    {
+        AutoRechts();
+    }
+   else if (distance > 30 && IRValueLinks == HIGH && IRValueRechts == HIGH)
+    {
+        AutoStop();
+    }
+   
+    if (distance < 30)
+    {
+        AutoStop();
+        
+    }
+
 }
 
 void AutoVor(){
@@ -83,47 +127,5 @@ void AutoLinks(){
 
 void Scan()
 {
-
-}
-
-void loop()
-{
-    const int IRValueLinks = digitalRead(IR_PIN_Links); // falls du das nicht mehr änderst bnutze const int
-    const int IRValueRechts = digitalRead(IR_PIN_Rechts); 
-
-    digitalWrite(TRIG_PIN, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(TRIG_PIN, LOW);
-    duration = pulseIn(ECHO_PIN, HIGH);
-    distance = duration * 0.034 / 2; // hast btw die formel falscxh gehabt du hattest statt '0.034' '0.038'
-
-    Serial.print("\n\n\ndistance: "); // einfach nur zum testen
-    Serial.print(distance);           //
-    Serial.print(" cm\nIR-status: "); //
-    Serial.print(IRValueLinks);            //
-
-    // bei deinem code achtetr er garnicht darauf ob er überhaupt noch hauf der linie ist
-    if (distance > 30 && IRValueLinks == LOW && IRValueRechts == LOW) // falls es nicht funktioniert mach mal aus 'HIGH' einfach '1' und aus 'LOW' '0'
-    {
-        // weg frei dings fährt los
-      AutoVor();
-    }
-    else if (distance > 30 && IRValueLinks == HIGH && IRValueRechts == LOW)
-    {
-      AutoLinks();
-    }
-   else if (distance > 30 && IRValueLinks == LOW && IRValueRechts == HIGH)
-    {
-        AutoRechts();
-    }
-   else if (distance > 30 && IRValueLinks == HIGH && IRValueRechts == HIGH)
-    {
-        AutoStop();
-    }
-   
-    if (distance < 30)
-    {
-        AutoStop();
-    }
-
+ 
 }
