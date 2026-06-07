@@ -28,7 +28,7 @@ void AutoRechts();
 
 void AutoLinks();
 
-void Scan();
+int Scan();
 
 void setup()
 {
@@ -85,7 +85,7 @@ void loop()
     if (distance < 30)
     {
         AutoStop();
-        
+        Scan();
     }
 
 }
@@ -125,7 +125,47 @@ void AutoLinks(){
     analogWrite(i4,100);
 }
 
-void Scan()
+int Scan()
 {
- 
+  for (int servoDeg = 90; servoDeg <= 180; servoDeg += 5)
+  {
+    servo.write(servoDeg);
+    delay(100);
+
+    digitalWrite(TRIG_PIN, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TRIG_PIN, LOW);
+    duration = pulseIn(ECHO_PIN, HIGH);
+    distance = duration * 0.034 / 2;
+
+    if (distance >= 35)
+    {
+      return 1;
+    }
+  }
+
+  servo.write(90);
+  delay(1000);
+
+  for (int servoDeg = 90; servoDeg >= 0; servoDeg -= 5)
+  {
+    servo.write(servoDeg);
+    delay(100);
+
+    digitalWrite(TRIG_PIN, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TRIG_PIN, LOW);
+    duration = pulseIn(ECHO_PIN, HIGH);
+    distance = duration * 0.034 / 2;
+
+    if (distance >= 35)
+    {
+      return 2;
+    }
+  }
+
+  servo.write(90);
+  delay(1000);
+
+  return 3;
 }
