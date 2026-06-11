@@ -40,7 +40,7 @@ void setup()
     pinMode(i3, OUTPUT);
     pinMode(i4, OUTPUT);
 
-    pinMode(12, OUTPUT);
+    pinMode(12, OUTPUT); 
     digitalWrite(12, HIGH);
 
     pinMode(IR_PIN_Links, INPUT);
@@ -70,11 +70,11 @@ void loop()
 
     if (distance > 30 && IRValueLinks == LOW && IRValueRechts == LOW) // falls es nicht funktioniert mach mal aus 'HIGH' einfach '1' und aus 'LOW' '0'
     {
-      AutoVor();
+       AutoVor();
     }
     else if (distance > 30 && IRValueLinks == HIGH && IRValueRechts == LOW)
     {
-      AutoLinks();
+       AutoLinks();
     }
    else if (distance > 30 && IRValueLinks == LOW && IRValueRechts == HIGH)
     {
@@ -95,9 +95,9 @@ void loop()
 
 void AutoVor(){
     analogWrite(i1,0);
-    analogWrite(i2,75);
+    analogWrite(i2,70);
     analogWrite(i3,0);
-    analogWrite(i4,75);
+    analogWrite(i4,70);
 }
 
 void AutoStop(){
@@ -108,15 +108,15 @@ void AutoStop(){
 }
 
 void AutoRueckwaerts(){
-     analogWrite(i1,75);
+     analogWrite(i1,70);
      analogWrite(i2,0);
-     analogWrite(i3,75);
+     analogWrite(i3,70);
      analogWrite(i4,0);
 }
 
 void AutoRechts(){
     analogWrite(i1,0);
-    analogWrite(i2,75);
+    analogWrite(i2,70);
     analogWrite(i3,0);
     analogWrite(i4,0);
 }
@@ -125,8 +125,9 @@ void AutoLinks(){
     analogWrite(i1,0);
     analogWrite(i2,0);
     analogWrite(i3,0);
-    analogWrite(i4,75);
+    analogWrite(i4,70);
 }
+
 
 int Scan()
 {
