@@ -40,6 +40,9 @@ void setup()
     pinMode(i3, OUTPUT);
     pinMode(i4, OUTPUT);
 
+    pinMode(12, OUTPUT);
+    digitalWrite(12, HIGH);
+
     pinMode(IR_PIN_Links, INPUT);
     pinMode(IR_PIN_Rechts, INPUT);
 
@@ -92,9 +95,9 @@ void loop()
 
 void AutoVor(){
     analogWrite(i1,0);
-    analogWrite(i2,100);
+    analogWrite(i2,75);
     analogWrite(i3,0);
-    analogWrite(i4,100);
+    analogWrite(i4,75);
 }
 
 void AutoStop(){
@@ -105,24 +108,24 @@ void AutoStop(){
 }
 
 void AutoRueckwaerts(){
-     analogWrite(i1,100);
+     analogWrite(i1,75);
      analogWrite(i2,0);
-     analogWrite(i3,100);
+     analogWrite(i3,75);
      analogWrite(i4,0);
 }
 
 void AutoRechts(){
     analogWrite(i1,0);
-    analogWrite(i2,100);
-    analogWrite(i3,100);
+    analogWrite(i2,75);
+    analogWrite(i3,0);
     analogWrite(i4,0);
 }
 
 void AutoLinks(){
-    analogWrite(i1,100);
+    analogWrite(i1,0);
     analogWrite(i2,0);
     analogWrite(i3,0);
-    analogWrite(i4,100);
+    analogWrite(i4,75);
 }
 
 int Scan()
