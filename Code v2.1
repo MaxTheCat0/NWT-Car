@@ -1,5 +1,5 @@
 
-#include <Servo.h>
+//#include <Servo.h>
 
 const int TRIG_PIN = 4;
 const int ECHO_PIN = 2;
@@ -13,8 +13,8 @@ const int i2 = 6;
 const int i3 = 9;
 const int i4 = 10;
 
-Servo servo;
-const int ServoPin = 3;
+//Servo servo;
+//const int ServoPin = 3;
 
 long duration;
 int distance;
@@ -40,21 +40,24 @@ void setup()
     pinMode(i3, OUTPUT);
     pinMode(i4, OUTPUT);
 
+    pinMode(12, OUTPUT); 
+    digitalWrite(12, HIGH);
+
     pinMode(IR_PIN_Links, INPUT);
     pinMode(IR_PIN_Rechts, INPUT);
 
     Serial.begin(9600); // Zum checken von Ultraschal und IR
 
-    servo.attach(ServoPin);
+    //servo.attach(ServoPin);
     
 }
 
 
 void AutoVor(){
     analogWrite(i1,0);
-    analogWrite(i2,100);
+    analogWrite(i2,70);
     analogWrite(i3,0);
-    analogWrite(i4,100);
+    analogWrite(i4,70);
 }
 
 void AutoStop(){
@@ -65,24 +68,24 @@ void AutoStop(){
 }
 
 void AutoRueckwaerts(){
-     analogWrite(i1,100);
+     analogWrite(i1,70);
      analogWrite(i2,0);
-     analogWrite(i3,100);
+     analogWrite(i3,70);
      analogWrite(i4,0);
 }
 
 void AutoRechts(){
     analogWrite(i1,0);
-    analogWrite(i2,100);
-    analogWrite(i3,100);
+    analogWrite(i2,70);
+    analogWrite(i3,0);
     analogWrite(i4,0);
 }
 
 void AutoLinks(){
-    analogWrite(i1,100);
+    analogWrite(i1,0);
     analogWrite(i2,0);
     analogWrite(i3,0);
-    analogWrite(i4,100);
+    analogWrite(i4,70);
 }
 
 void loop()
@@ -103,19 +106,19 @@ void loop()
     Serial.print(" cm\nIR-statusRechts: "); 
     Serial.print(IRValueRechts);    
 
-    if (distance > 30 && IRValueLinks == LOW && IRValueRechts == LOW) // falls es nicht funktioniert mach mal aus 'HIGH' einfach '1' und aus 'LOW' '0'
+    if (distance > 30 && IRValueLinks == 0 && IRValueRechts == 0) // falls es nicht funktioniert mach mal aus 'HIGH' einfach '1' und aus 'LOW' '0'
     {
        AutoVor();
     }
-    else if (distance > 30 && IRValueLinks == HIGH && IRValueRechts == LOW)
+    else if (distance > 30 && IRValueLinks == 1 && IRValueRechts == 0)
     {
        AutoLinks();
     }
-   else if (distance > 30 && IRValueLinks == LOW && IRValueRechts == HIGH)
+   else if (distance > 30 && IRValueLinks == 0 && IRValueRechts == 1)
     {
         AutoRechts();
     }
-   else if (distance > 30 && IRValueLinks == HIGH && IRValueRechts == HIGH)
+   else if (distance > 30 && IRValueLinks == 1 && IRValueRechts == 1)
     {
         AutoStop();
     }
