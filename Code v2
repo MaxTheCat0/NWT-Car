@@ -89,10 +89,21 @@ void loop()
     {
         AutoStop();
         Scan();
+        if (Scan() == 1){
+            AutoRechts();
+            //delay(1000);
+        }
+        else if (Scan() == 2){
+            AutoLinks();
+            //delay(1000);
+        }
+        else if (Scan() == 3){
+            AutoRueckwaerts();
+            //delay(1000);
+        }
+
     }
-
 }
-
 void AutoVor(){
     analogWrite(i1,0);
     analogWrite(i2,70);
