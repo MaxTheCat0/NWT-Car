@@ -1,7 +1,7 @@
 #include <Servo.h>
 
 const int TRIG_PIN = 4;
-const int ECHO_PIN = 2;
+const int ECHO_PIN = A3;
 
 const int IR_PIN_Links = A1;
 const int IR_PIN_Rechts = A2;
@@ -16,7 +16,9 @@ Servo servo;
 const int ServoPin = 13;
 
 long duration;
+long duration1;
 int distance;
+int distance1;
 
 void AutoVor();
 
@@ -56,18 +58,19 @@ void loop()
 {
     const int IRValueLinks = digitalRead(IR_PIN_Links); // falls du das nicht mehr änderst bnutze const int
     const int IRValueRechts = digitalRead(IR_PIN_Rechts); 
-
+    digitalWrite(TRIG_PIN,LOW);
+    delay(10);
     digitalWrite(TRIG_PIN, HIGH);
-    delayMicroseconds(10);
+    delay(10);
     digitalWrite(TRIG_PIN, LOW);
     duration = pulseIn(ECHO_PIN, HIGH);
-    distance = duration * 0.034 / 2; // hast btw die formel falscxh gehabt du hattest statt '0.034' '0.038'
+    distance = duration* 0.034 / 2; // hast btw die formel falscxh gehabt du hattest statt '0.034' '0.038'
 
     Serial.print("\n\n\ndistance: "); // einfach nur zum testen
     Serial.print(distance);           
     Serial.print(" cm\nIR-status: "); 
     Serial.print(IRValueLinks);            
-
+if(distance > 30){
     if (distance > 30 && IRValueLinks == LOW && IRValueRechts == LOW) // falls es nicht funktioniert mach mal aus 'HIGH' einfach '1' und aus 'LOW' '0'
     {
        AutoVor();
@@ -84,28 +87,28 @@ void loop()
     {
         AutoStop();
     }
-   
+}
     if (distance < 30)
     {
         AutoStop();
         Scan();
         if (Scan() == 1){
             AutoRechts();
-            //delay(50);
-            //AutoLinks();
-            //delay(50);
-            //AutoRechts();
+            delay(50);
+            AutoLinks();
+            delay(50);
+            AutoRechts();
         }
         else if (Scan() == 2){
             AutoLinks();
-            //delay(50);
-            //AutoRechts();
-            //delay(50);
-            //AutoLinks();
+            delay(50);
+            AutoRechts();
+            delay(50);
+            AutoLinks();
         }
         else if (Scan() == 3){
             AutoRueckwaerts();
-            //delay(1000);
+            delay(1000);
         }
 
     }
@@ -148,18 +151,20 @@ void AutoLinks(){
 
 int Scan()
 {
-  for (int servoDeg = 90; servoDeg <= 180; servoDeg += 5)
+  for (int servoDeg = 90; servoDeg <= 180; servoDeg += 90)
   {
     servo.write(servoDeg);
-    delay(100);
+    delay(1000);
 
     digitalWrite(TRIG_PIN, HIGH);
-    delayMicroseconds(10);
+    delay(10);
     digitalWrite(TRIG_PIN, LOW);
-    duration = pulseIn(ECHO_PIN, HIGH);
-    distance = duration * 0.034 / 2;
-
-    if (distance >= 35)
+    duration1 = pulseIn(ECHO_PIN, HIGH);
+    distance1 = duration1 * 0.034 / 2;
+    Serial.print(" cm\nDistance: "); 
+    Serial.print(distance1);   
+    
+    if (distance1 >= 30)
     {
       return 1;
     }
@@ -168,18 +173,20 @@ int Scan()
   servo.write(90);
   delay(1000);
 
-  for (int servoDeg = 90; servoDeg >= 0; servoDeg -= 5)
+  for (int servoDeg = 90; servoDeg >= 0; servoDeg -= 90)
   {
     servo.write(servoDeg);
-    delay(100);
+    delay(1000);
 
     digitalWrite(TRIG_PIN, HIGH);
-    delayMicroseconds(10);
+    delay(10);
     digitalWrite(TRIG_PIN, LOW);
-    duration = pulseIn(ECHO_PIN, HIGH);
-    distance = duration * 0.034 / 2;
-
-    if (distance >= 35)
+    duration1 = pulseIn(ECHO_PIN, HIGH);
+    distance1 = duration1 * 0.034 / 2;
+    Serial.print(" cm\n:Distance: "); 
+    Serial.print(distance1);   
+    
+    if (distance1 >= 30)
     {
       return 2;
     }
