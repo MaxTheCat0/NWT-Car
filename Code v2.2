@@ -1,0 +1,199 @@
+#include <Servo.h>
+
+const int TRIG_PIN = 4;
+const int ECHO_PIN = A3;
+
+const int IR_PIN_Links = A1;
+const int IR_PIN_Rechts = A2;
+
+// motor pins
+const int i1 = 5;
+const int i2 = 6;
+const int i3 = 3;
+const int i4 = 11;
+
+Servo servo;
+const int ServoPin = 13;
+
+long duration;
+long duration1;
+int distance;
+int distance1;
+
+void AutoVor();
+
+void AutoStop();
+
+void AutoRueckwaerts();
+
+void AutoRechts();
+
+void AutoLinks();
+
+int Scan();
+
+void setup()
+{
+    pinMode(TRIG_PIN, OUTPUT);
+    pinMode(ECHO_PIN, INPUT);
+
+    pinMode(i1, OUTPUT);
+    pinMode(i2, OUTPUT);
+    pinMode(i3, OUTPUT);
+    pinMode(i4, OUTPUT);
+
+    pinMode(12, OUTPUT); 
+    digitalWrite(12, HIGH);
+
+    pinMode(IR_PIN_Links, INPUT);
+    pinMode(IR_PIN_Rechts, INPUT);
+
+    Serial.begin(9600); // Zum checken von Ultraschal und IR
+
+    servo.attach(ServoPin);
+    
+}
+
+void loop()
+{
+    const int IRValueLinks = digitalRead(IR_PIN_Links); // falls du das nicht mehr änderst bnutze const int
+    const int IRValueRechts = digitalRead(IR_PIN_Rechts); 
+    digitalWrite(TRIG_PIN,LOW);
+    delay(10);
+    digitalWrite(TRIG_PIN, HIGH);
+    delay(10);
+    digitalWrite(TRIG_PIN, LOW);
+    duration = pulseIn(ECHO_PIN, HIGH);
+    distance = duration* 0.034 / 2; // hast btw die formel falscxh gehabt du hattest statt '0.034' '0.038'
+
+    Serial.print("\n\n\ndistance: "); // einfach nur zum testen
+    Serial.print(distance);           
+    Serial.print(" cm\nIR-status: "); 
+    Serial.print(IRValueLinks);            
+if(distance > 30){
+    if (distance > 30 && IRValueLinks == LOW && IRValueRechts == LOW) // falls es nicht funktioniert mach mal aus 'HIGH' einfach '1' und aus 'LOW' '0'
+    {
+       AutoVor();
+    }
+    else if (distance > 30 && IRValueLinks == HIGH && IRValueRechts == LOW)
+    {
+       AutoLinks();
+    }
+   else if (distance > 30 && IRValueLinks == LOW && IRValueRechts == HIGH)
+    {
+        AutoRechts();
+    }
+   else if (distance > 30 && IRValueLinks == HIGH && IRValueRechts == HIGH)
+    {
+        AutoStop();
+    }
+}
+    if (distance < 30)
+    {
+        AutoStop();
+        Scan();
+        if (Scan() == 1){
+            AutoRechts();
+            //delay(50);
+            //AutoLinks();
+            //delay(50);
+            //AutoRechts();
+        }
+        else if (Scan() == 2){
+            AutoLinks();
+            //delay(50);
+            //AutoRechts();
+            //delay(50);
+            //AutoLinks();
+        }
+        else if (Scan() == 3){
+            AutoRueckwaerts();
+            //delay(1000);
+        }
+
+    }
+}
+void AutoVor(){
+    analogWrite(i1,0);
+    analogWrite(i2,70);
+    analogWrite(i3,0);
+    analogWrite(i4,70);
+}
+
+void AutoStop(){
+     analogWrite(i1,0);
+     analogWrite(i2,0);
+     analogWrite(i3,0);
+     analogWrite(i4,0);
+}
+
+void AutoRueckwaerts(){
+     analogWrite(i1,70);
+     analogWrite(i2,0);
+     analogWrite(i3,70);
+     analogWrite(i4,0);
+}
+
+void AutoRechts(){
+    analogWrite(i1,0);
+    analogWrite(i2,70);
+    analogWrite(i3,0);
+    analogWrite(i4,0);
+}
+
+void AutoLinks(){
+    analogWrite(i1,0);
+    analogWrite(i2,0);
+    analogWrite(i3,0);
+    analogWrite(i4,70);
+}
+
+
+int Scan()
+{
+  for (int servoDeg = 90; servoDeg <= 180; servoDeg += 5)
+  {
+    servo.write(servoDeg);
+    delay(100);
+
+    digitalWrite(TRIG_PIN, HIGH);
+    delay(10);
+    digitalWrite(TRIG_PIN, LOW);
+    duration1 = pulseIn(ECHO_PIN, HIGH);
+    distance1 = duration1 * 0.034 / 2;
+    Serial.print(" cm\nDistance: "); 
+    Serial.print(distance1);   
+    
+    if (distance1 >= 30)
+    {
+      return 1;
+    }
+  }
+
+  servo.write(90);
+  delay(1000);
+
+  for (int servoDeg = 90; servoDeg >= 0; servoDeg -= 5)
+  {
+    servo.write(servoDeg);
+    delay(100);
+
+    digitalWrite(TRIG_PIN, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TRIG_PIN, LOW);
+    duration1 = pulseIn(ECHO_PIN, HIGH);
+    distance1 = duration1 * 0.034 / 2;
+    Serial.print(" cm\n:Distance: "); 
+    Serial.print(distance1);   
+    
+    if (distance1 >= 30)
+    {
+      return 2;
+    }
+  }
+
+  servo.write(90);
+  delay(1000);
+
+  return 3;
+}
