@@ -91,11 +91,17 @@ void loop()
         Scan();
         if (Scan() == 1){
             AutoRechts();
-            //delay(1000);
+            //delay(50);
+            //AutoLinks();
+            //delay(50);
+            //AutoRechts();
         }
         else if (Scan() == 2){
             AutoLinks();
-            //delay(1000);
+            //delay(50);
+            //AutoRechts();
+            //delay(50);
+            //AutoLinks();
         }
         else if (Scan() == 3){
             AutoRueckwaerts();
