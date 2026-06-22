@@ -1,5 +1,9 @@
 #include <Servo.h>
 
+#define Rechtsfrei 1
+#define Linksfrei 2
+#define Nichts 3
+
 const int TRIG_PIN = 4;
 const int ECHO_PIN = A3;
 
@@ -29,6 +33,10 @@ void AutoRueckwaerts();
 void AutoRechts();
 
 void AutoLinks();
+
+void AutoRechtsumfahren();
+
+void AutoLinksumfahren();
 
 int Scan();
 
@@ -71,7 +79,6 @@ void loop()
     Serial.print(distance);           
     Serial.print(" cm\nIR-status: "); 
     Serial.print(IRValueLinks);            
-
 if(distance > 30){
     if (distance > 30 && IRValueLinks == LOW && IRValueRechts == LOW) // falls es nicht funktioniert mach mal aus 'HIGH' einfach '1' und aus 'LOW' '0'
     {
@@ -94,28 +101,27 @@ if(distance > 30){
     {
         AutoStop();
         Scan();
-        if (Scan() == 1){
+        if (Scan() == Rechtsfrei){
             AutoRechts();
-            delay(50);
+            delay(500);
             AutoLinks();
-            delay(50);
+            delay(500);
             AutoRechts();
         }
-        else if (Scan() == 2){
+        else if (Scan() == Linksfrei){
             AutoLinks();
-            delay(50);
+            delay(500);
             AutoRechts();
-            delay(50);
+            delay(500);
             AutoLinks();
         }
-        else if (Scan() == 3){
+        else if (Scan() == Nichts){
             AutoRueckwaerts();
-            delay(1000);
+            delay(500);
         }
 
     }
 }
-
 void AutoVor(){
     analogWrite(i1,0);
     analogWrite(i2,70);
@@ -151,10 +157,17 @@ void AutoLinks(){
     analogWrite(i4,70);
 }
 
+void AutoRechtsumfahren(){
+
+}
+
+void AutoLinksumfahren(){
+
+}
 
 int Scan()
 {
-  for (int servoDeg = 90; servoDeg <= 180; servoDeg += 90)
+  for (int servoDeg = 90; servoDeg <= 180; servoDeg += 15)
   {
     servo.write(servoDeg);
     delay(1000);
@@ -176,13 +189,13 @@ int Scan()
   servo.write(90);
   delay(1000);
 
-  for (int servoDeg = 90; servoDeg >= 0; servoDeg -= 90)
+  for (int servoDeg = 90; servoDeg >= 0; servoDeg -= 15)
   {
     servo.write(servoDeg);
     delay(1000);
 
     digitalWrite(TRIG_PIN, HIGH);
-    delay(10);
+    delayMicroseconds(10);
     digitalWrite(TRIG_PIN, LOW);
     duration1 = pulseIn(ECHO_PIN, HIGH);
     distance1 = duration1 * 0.034 / 2;
