@@ -1,0 +1,347 @@
+#include <Adafruit_NeoPixel.h>       //Bibliothek für die NeoPixel LEDs
+#include <LiquidCrystal_I2C.h>       //Bibliothek für das Lcd
+#include <EEPROM.h>                  //Bibliothek für EEPROM / Highscore speichern
+#include <Wire.h>                    //Bibliothek für das Lcd
+LiquidCrystal_I2C Lcd(0x27, 16, 2);  //Aktiviert Lcd
+
+#define PIN_NEO_PIXEL A1  //legt fest, an welchem Pin die NeoPixel Leds liegen
+#define NUM_PIXELS 3      //legt fest, wie viele NeoPixel LEDs mit dem Pin in einer Reihe verbunden sinde
+#define NUM_COLORS 4
+
+Adafruit_NeoPixel strip(NUM_PIXELS, PIN_NEO_PIXEL, NEO_GRB + NEO_KHZ800);
+
+
+int reaktionstest = 0;  //reaktionstest/Highscore, der abgespielt wird
+int d = 0;              //Zufälliges delay
+int i = 0;              //Zufällige Led
+int q = 0;              //Zufällige Farbe
+int w = 0;              //1.Farbe
+int e = 0;              //2.Farbe
+int r = 0;              //3.Farbe
+int g = -1;             //gesuchte Taste
+int taste = -1;         //Wert der gedrückten Taste
+int RN = 1;             //Reaktionstest Nummer
+int Platz = 0;          //Highscoreabrufung
+
+unsigned long Score;  //Punktzahlermittlung
+unsigned long start;
+unsigned long zeit;  //"start" und "zeit" werden für die Zeitmessung beim Reaktionstest verwendet
+char menu[4][17] = { "Reaktionstest 1", "Reaktionstest 2", "Reaktionstest 3", "Highscores" };
+const char Buchstaben[] = " ABCDEFGHIJKLMNOPQRSTUWVXYZabcdefghijklmnopqrstuwvxyz1234567890";  //Buchstaben werden hinzugefügt
+int Buchstabe;                                                                                //wird in Buchstaben[] eingesetzt, um Buchstabe anzugeben
+int AHSE[10] = { 0, 14, 28, 42, 56, 70, 84, 98, 112, 126 };                                   //AddresseHighScore1
+const int MaxScores = 10;                                                                     //Maximale Anzahl der gespeicherten Scores im EEPROM
+char NName[10];                                                                               //Speicherort Neuer Name
+
+struct MYHS {  //in der Strucktur werden Highscore und Name gespeichert, um später im Highscoremenü abgerufen zu werden
+
+  unsigned long Highscore;  //Highscore des EEPROM
+  char name[10];            //Name des EEPROM
+};
+MYHS CS;   //CurrentScore der gerade gespeichert / abgerufen wird
+MYHS OHS;  //OldHighScore der gerade gespeichert / abgerufen wird
+
+int Pins[6] = { 4, 5, 6, 7, 8, 9 };  //Pins, an denen Taster liegen
+
+int GEtaste() {
+  for (int l = 0; l < 6; l++) {
+    if (digitalRead(Pins[l]) == 0) {
+      return l + 4;  //wenn irgendein Taster gedrückt wird, so wird dieser in der Variable "l" gespeichert
+    };
+  }
+  return -1;
+}
+
+
+
+void countdown() {
+  Lcd.clear();
+  Lcd.setCursor(0, 0);
+  Lcd.print("Los gehts");
+  delay(100);
+  strip.setPixelColor(0, strip.Color(255, 0, 0));
+  strip.setPixelColor(1, strip.Color(255, 0, 0));
+  strip.setPixelColor(2, strip.Color(255, 0, 0));
+  strip.show();
+  delay(500);
+  strip.setPixelColor(0, strip.Color(0, 255, 0));
+  strip.setPixelColor(1, strip.Color(0, 255, 0));
+  strip.setPixelColor(2, strip.Color(0, 255, 0));
+  strip.show();
+  delay(500);
+  strip.setPixelColor(0, strip.Color(0, 0, 255));
+  strip.setPixelColor(1, strip.Color(0, 0, 255));
+  strip.setPixelColor(2, strip.Color(0, 0, 255));
+  strip.show();
+  delay(500);
+  strip.setPixelColor(0, strip.Color(255, 255, 255));
+  strip.setPixelColor(1, strip.Color(255, 255, 255));
+  strip.setPixelColor(2, strip.Color(255, 255, 255));
+  strip.show();
+  delay(500);
+  strip.clear();
+  strip.show();
+}
+void Reaktionstest() {
+  d = random(500, 2000);
+  delay(d);
+  strip.setPixelColor(i, strip.Color(w, e, r));
+  strip.show();
+  start = millis();
+  Lcd.clear();
+  Lcd.print("Drück!!!");
+  taste = -1;
+  while (taste == -1) {
+    taste = GEtaste();
+  }
+  Serial.print(taste);
+  zeit = millis() - start;
+  if (taste == g) {
+    Lcd.clear();
+    Lcd.setCursor(0, 0);
+    Lcd.print("Richtig!");
+    Lcd.setCursor(0, 1);
+    Lcd.print("Zeit:");
+    Lcd.print(zeit);
+    Score = Score - zeit;
+  } else {
+    Lcd.clear();
+    Lcd.setCursor(0, 0);
+    Lcd.print("Falsch!");
+    Lcd.setCursor(0, 1);
+    Lcd.print("Zeit:");
+    Lcd.print(zeit);
+    Score = Score - 2000;
+  }
+  delay(500);
+  taste = -1;
+  while (taste == -1) {
+    taste = GEtaste();
+  }
+}
+void Scorespeicherung() {
+  if (Score < 0) { Score = 0; };
+  if (Score > 10000) { Score = 0; };  //Stellt sicher, dass Score zwischen 0 und 10000 bleibt
+  Lcd.clear();
+  Lcd.setCursor(0, 0);
+  Lcd.print("Score:");
+  Lcd.print(Score);  //Schreibt Score auf das Lcd
+  delay(1000);
+  taste = -1;
+  while (taste == -1) {  //Wenn irgendeine Taste gedrückt wird, geht es weiter
+    taste = GEtaste();
+  }
+  Lcd.clear();
+  for (int i = MaxScores - 1; i > 0; i--) {
+    EEPROM.get(AHSE[i - 1], OHS);
+    if (Score > OHS.Highscore) {
+      Lcd.setCursor(0, 0);
+      Lcd.print("Score = Platz");
+      Lcd.print(i);
+    } else reaktionstest = 0;  //Schleife Reaktionstest wird beendet
+    Lcd.clear();
+    Lcd.setCursor(0, 0);
+    Lcd.cursor();  //aktiviert den Cursor auf dem Lcd
+    Lcd.print("Namen eingeben:");
+    for (i = 0; i < 8; i++) {  //9 Buchstaben für den Namen werden festgelegt
+      Buchstabe = 0;
+      while (digitalRead(8) == 1) {               //bis die mittlere Taste gedrückt wird, kann ein Buchstabe ausgewählt werden
+        Lcd.setCursor(i, 1);                      //setzt Cursor dahin, wo der Buchstabe hingeschrieben wird
+        Lcd.print(Buchstaben[Buchstabe]);         //Schreibt den ausgewählten Buchstaben
+        if (digitalRead(7) == 0) {                //wenn die rechte Taste gedrückt wird, dann ändert sich der Buchstabe durch das Array Buchstaben[] 1 nach rechts
+          Buchstabe++;                            //Buchstabe wird um 1 erhöht
+          if (Buchstabe > 62) { Buchstabe = 0; }  //Stellt sicher, dass Buchstabe innerhalb des Arrays Buchstaben[] bleibt
+          while (GEtaste() != -1) {};
+        }
+        if (digitalRead(9) == 0) {                //wenn die linke Taste gedrückt wird, dann ändert sich der Buchstabe durch das Array Buchstaben[] 1 nach links
+          Buchstabe--;                            //Buchstabe wird um 1 erniedrigt
+          if (Buchstabe < 0) { Buchstabe = 62; }  //Stellt sicher, dass Buchstabe innerhalb des Arrays Buchstaben[] bleibt
+          while (GEtaste() != -1) {};
+        }
+      }
+      Lcd.setCursor(i, 1);               //setzt Cursor dahin, wo der Buchstabe hingeschrieben wird
+      Lcd.print(Buchstaben[Buchstabe]);  //Schreibt den ausgewählten Buchstaben
+      NName[i] = Buchstaben[Buchstabe];  //Der neue Buchstabe wird an seinen Ort in dem Namen gesetzt
+      delay(50);
+      while (GEtaste() != -1) {};
+    }
+    Lcd.noCursor();  //deaktiviert den Cursor auf dem Lcd
+    Lcd.clear();
+    Lcd.setCursor(1, 0);  //setzt Cursor dahin, wo das Wort hingeschrieben wird
+    Lcd.print("Berechnen...");
+    NName[9] = '\0';  //Stellt sicher, dass NName nachher noch gelesen werden kann
+    for (int i = MaxScores - 1; i > 0; i--) {
+      EEPROM.get(AHSE[i - 1], OHS);
+      if (Score > OHS.Highscore) {
+        EEPROM.put(AHSE[i], OHS);  //schiebt alten Highscore 1 Platz nach hinten
+        if (i == 1) {
+          CS.Highscore = Score;     //ersetzt alten Highscore des "CurrentScores" mit neuem Highscore
+          strcpy(CS.name, NName);   //strcpy kopiert die char von NName und fügt sie in den Namen des "CurrentScores" ein
+          EEPROM.put(AHSE[0], CS);  //"CurrentScores" wird in den EEPROM auf Platz 1 eingefügt
+          Lcd.clear();
+          Lcd.setCursor(1, 0);  //setzt Cursor dahin, wo das Wort hingeschrieben wird
+          Lcd.print("Platz:");
+          Lcd.print(i);
+          delay(1000);
+          break;  //Schleife Reaktionstest wird beendet
+        }
+      } else {
+        CS.Highscore = Score;     //ersetzt alten Highscore des EEPROM mit neuem Highscore
+        strcpy(CS.name, NName);   //strcpy kopiert die char von NName und fügt sie in den Namen des EEPROM ein
+        EEPROM.put(AHSE[i], CS);  //fügt neuen Highscore und Namen ein
+        Lcd.clear();
+        Lcd.setCursor(1, 0);  //setzt Cursor dahin, wo das Wort hingeschrieben wird
+        Lcd.print("Platz:");
+        Lcd.print(i);
+        delay(1000);
+        break;  //Schleife Reaktionstest wird beendet
+      }
+    }
+  }
+}
+void setup() {
+  Lcd.init();                  //Lcd wird aktiviert
+  Lcd.backlight();             //Die Beleuchtung des Lcd wird aktiviert
+  randomSeed(analogRead(A1));  //Zufallsseed wird auf A1 gelegt, um bei jedem Start des Arduinos eine andere "zufällige" LED und Farbe zu bekommen
+  strip.begin();               //Neopixel LEDs werden angeschaltet
+  pinMode(9, INPUT_PULLUP);    //linker Knopf
+  pinMode(8, INPUT_PULLUP);    //mittlerer Knopf
+  pinMode(7, INPUT_PULLUP);    //rechter Knopf
+  pinMode(6, INPUT_PULLUP);    //linker farbiger Knopf
+  pinMode(5, INPUT_PULLUP);    //mittlerer farbiger Knopf
+  pinMode(4, INPUT_PULLUP);    //rechter farbiger Knopf
+}
+
+void loop() {                              //folgendes wird fortführend wiederholt
+  Lcd.clear();                             //Lcd wird gelöscht
+  RN = 1;                                  //RN wird auf 1 gesetzt
+  while (digitalRead(8) == 1) {            //Während mittlerer Knopf nicht gedrückt ist
+    Lcd.setCursor(0, 0);                   //Cursor wird auf oben links gesetzt
+    Lcd.print(menu[RN - 1]);               //Reaktionstest RN( 1, 2 oder 3) oder Highscores (4) wird auf das Lcd geschrieben
+    if (digitalRead(7) == 0 && RN != 4) {  //Wenn rechter Knopf gedrückt wird und RN nicht 4 ist
+      Lcd.clear();                         //Lcd wird gelöscht
+      RN++;                                //RN wird um 1 erhöht
+      delay(500);                          //Warte 50ms
+    }
+    if (digitalRead(9) == 0 && RN != 1) {  //Wenn linker Knopf gedrückt wird und RN nicht 1 ist
+      Lcd.clear();                         //Lcd wird gelöscht
+      RN--;                                //RN wird um 1 erniedrigt
+      delay(500);                          //Warte 50ms
+    }
+  }
+  delay(100);          //Warte 100ms
+  reaktionstest = RN;  //reaktionstest wird auf RN angeglichen
+
+  if (reaktionstest == 1) {        //Wenn reaktionstest 1 ist wird folgendes abgespielt
+    Score = 10000;                 //Score wird neu gesetzt
+    for (int u = 0; u < 5; u++) {  //5 mal wird folgendes wiederholt
+      countdown();                 //void countdown() wird abgespielt
+      i = random(0, 3);            //i wird auf 0, 1 oder 2 gesetzt
+      if (i == 0) {                //wenn i 0 ist
+        w = 255;                   //Rotanteil wird maximiert
+        e = 0;                     //Grünanteil wird minimiert
+        r = 0;                     //Blauanteil wird minimiert
+        g = 6;                     //Farbe wird Rot und richtige Taste ist 6
+      }
+      if (i == 1) {  //wenn i 1 ist
+        w = 0;       //Rotanteil wird minimiert
+        e = 255;     //Grünanteil wird maximiert
+        r = 0;       //Blauanteil wird minimiert
+        g = 5;       //Farbe wird Grün und richtige Taste ist 5
+      }
+      if (i == 2) {  //wenn i 2 ist
+        w = 0;       //Rotanteil wird minimiert
+        e = 0;       //Grünanteil wird minimiert
+        r = 255;     //Blauanteil wird maximiert
+        g = 4;       //Farbe wird Blau und richtige Taste ist 4
+      }
+      Reaktionstest();  //void Reaktionstest() wird abgespielt
+    }
+    Scorespeicherung();  //void Scorespeicherung() wird abgespielt
+    reaktionstest = 0;
+  }
+  if (reaktionstest == 2) {        //Wenn reaktionstest 2 ist wird folgendes abgespielt
+    Score = 10000;                 //Score wird neu gesetzt
+    for (int u = 0; u < 5; u++) {  //5 mal wird folgendes wiederholt
+      countdown();
+      i = 1;             //LED wird auf 1 gesetzt d.h. die mittlere LED geht an
+      q = random(0, 3);  //q wird auf 0, 1 oder 2 gesetzt
+      if (q == 0) {      //wenn q 0 ist
+        w = 255;         //Rotanteil wird maximiert
+        e = 0;           //Grünanteil wird minimiert
+        r = 0;           //Blauanteil wird minimiert
+        g = 6;           //Farbe wird Rot und richtige Taste ist 6
+      }
+      if (q == 1) {  //wenn q 1 ist
+        w = 0;       //Rotanteil wird minimiert
+        e = 255;     //Grünanteil wird maximiert
+        r = 0;       //Blauanteil wird minimiert
+        g = 5;       //Farbe wird Grün und richtige Taste ist 5
+      }
+      if (q == 2) {  //wenn q 2 ist
+        w = 0;       //Rotanteil wird minimiert
+        e = 0;       //Grünanteil wird minimiert
+        r = 255;     //Blauanteil wird maximiert
+        g = 4;       //Farbe wird Blau und richtige Taste ist 4
+      }
+      Reaktionstest();  //void Reaktionstest() wird abgespielt
+    }
+    Scorespeicherung();  //void Scorespeicherung() wird abgespielt
+    reaktionstest = 0;
+  }
+  if (reaktionstest == 3) {        //Wenn reaktionstest 3 ist wird folgendes abgespielt
+    Score = 10000;                 //Score wird neu gesetzt
+    for (int u = 0; u < 5; u++) {  //5 mal wird folgendes wiederholt
+      countdown();
+      i = random(0, 3);  //i wird auf 0, 1 oder 2 gesetzt
+      q = random(0, 3);  //q wird auf 0, 1 oder 2 gesetzt
+      if (q == 0) {      //wenn q 0 ist
+        w = 255;         //Rotanteil wird maximiert
+        e = 0;           //Grünanteil wird minimiert
+        r = 0;           //Blauanteil wird minimiert
+        g = 6;           //Richtige Taste ist 6
+      }
+      if (q == 1) {  //wenn q 1 ist
+        w = 0;       //Rotanteil wird minimiert
+        e = 255;     //Grünanteil wird maximiert
+        r = 0;       //Blauanteil wird minimiert
+        g = 5;       //Richtige Taste ist 5
+      }
+      if (q == 2) {  //wenn q 2 ist
+        w = 0;       //Rotanteil wird minimiert
+        e = 0;       //Grünanteil wird minimiert
+        r = 255;     //Blauanteil wird maximiert
+        g = 4;       //Richtige Taste ist 4
+      }
+      Reaktionstest();  //void Reaktionstest() wird abgespielt
+    }
+    Scorespeicherung();  //void Scorespeicherung() wird abgespielt
+    reaktionstest = 0;
+  }
+
+  if (reaktionstest == 4) {                     //Wenn reaktionstest 4 ist wird folgendes abgespielt
+    while (digitalRead(8) == 1) {               //Während mittlerer Knopf nicht gedrückt ist
+      Lcd.setCursor(0, 0);                      //Cursor wird auf oben links gesetzt
+      Lcd.print("Platz:");                      //"Platz:" wird auf das LCD geschrieben
+      Lcd.print(Platz + 1);                     //Nummer X des Platzes wird auf das LCD geschrieben
+      EEPROM.get(AHSE[Platz], OHS);             //Der Platz X wird aus dem EEPROM abgerufen
+      Lcd.setCursor(0, 7);                      //Cursor wird auf oben 7.tes Feld gesetzt
+      Lcd.print("Score:");                      //"Score" wird auf das LCD geschrieben
+      Lcd.print(OHS.Highscore);                 //Der Score wird auf das LCD geschrieben
+      Lcd.setCursor(1, 0);                      //Cursor wird auf unten links gesetzt
+      Lcd.print(OHS.name);                      //Der Name der Person, die den Highscore gemacht hat, wird auf das LCD geschrieben
+      delay(500);                               //Warte 500ms
+      if (digitalRead(9) == 0 && Platz != 9) {  //Wenn rechter Knopf gedrückt wird und Platz nicht 9 ist
+        Lcd.clear();                            //LCD wird gelöscht
+        Platz++;                                //Platz wird um 1 erhöht
+        delay(50);                              //Warte 50ms
+      }
+      if (digitalRead(7) == 0 && Platz != 0) {  //Wenn linker Knopf gedrückt wird und Platz nicht 1 ist
+        Lcd.clear();                            //LCD wird gelöscht-
+        Platz--;                                //Platz wird um 1 erniedrigt
+        delay(50);                              //Warte 50ms
+      }
+    }
+    reaktionstest = 0;  //Schleife Reaktionstest wird beendet
+  }
+}
