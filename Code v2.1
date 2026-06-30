@@ -55,9 +55,9 @@ void setup()
 
 void AutoVor(){
     analogWrite(i1,0);
-    analogWrite(i2,70);
+    analogWrite(i2,60);
     analogWrite(i3,0);
-    analogWrite(i4,70);
+    analogWrite(i4,60);
 }
 
 void AutoStop(){
@@ -68,15 +68,15 @@ void AutoStop(){
 }
 
 void AutoRueckwaerts(){
-     analogWrite(i1,70);
+     analogWrite(i1,60);
      analogWrite(i2,0);
-     analogWrite(i3,70);
+     analogWrite(i3,60);
      analogWrite(i4,0);
 }
 
 void AutoRechts(){
     analogWrite(i1,0);
-    analogWrite(i2,70);
+    analogWrite(i2,60);
     analogWrite(i3,0);
     analogWrite(i4,0);
 }
@@ -85,7 +85,7 @@ void AutoLinks(){
     analogWrite(i1,0);
     analogWrite(i2,0);
     analogWrite(i3,0);
-    analogWrite(i4,70);
+    analogWrite(i4,60);
 }
 
 void loop()
