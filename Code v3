@@ -1,0 +1,129 @@
+
+//#include <Servo.h>
+
+const int TRIG_PIN = 4;
+const int ECHO_PIN = A3;
+
+const int IR_PIN_Links = A1;
+const int IR_PIN_Rechts = A2;
+
+// motor pins
+const int i1 = 5;
+const int i2 = 6;
+const int i3 = 3;
+const int i4 = 11;
+
+//Servo servo;
+//const int ServoPin = 3;
+
+long duration;
+int distance;
+
+int v; //geschwidigkeit
+
+void AutoVor();
+
+void AutoStop();
+
+void AutoRueckwaerts();
+
+void AutoRechts();
+
+void AutoLinks();
+
+
+void setup()
+{
+    pinMode(TRIG_PIN, OUTPUT);
+    pinMode(ECHO_PIN, INPUT);
+
+    pinMode(i1, OUTPUT);
+    pinMode(i2, OUTPUT);
+    pinMode(i3, OUTPUT);
+    pinMode(i4, OUTPUT);
+
+    pinMode(12, OUTPUT); 
+    digitalWrite(12, HIGH);
+
+    pinMode(IR_PIN_Links, INPUT);
+    pinMode(IR_PIN_Rechts, INPUT);
+
+    Serial.begin(9600); // Zum checken von Ultraschal und IR
+
+    //servo.attach(ServoPin);
+    
+}
+
+
+void AutoVor(){
+    analogWrite(i1,0);
+    analogWrite(i2,80);
+    analogWrite(i3,0);
+    analogWrite(i4,80);
+}
+
+void AutoStop(){
+     analogWrite(i1,0);
+     analogWrite(i2,0);
+     analogWrite(i3,0);
+     analogWrite(i4,0);
+}
+
+void AutoRueckwaerts(){
+     analogWrite(i1,80);
+     analogWrite(i2,0);
+     analogWrite(i3,80);
+     analogWrite(i4,0);
+}
+
+void AutoRechts(){
+    analogWrite(i1,0);
+    analogWrite(i2,80);
+    analogWrite(i3,0);
+    analogWrite(i4,0);
+}
+
+void AutoLinks(){
+    analogWrite(i1,0);
+    analogWrite(i2,0);
+    analogWrite(i3,0);
+    analogWrite(i4,80);
+}
+
+void loop()
+{
+    const int IRValueLinks = digitalRead(IR_PIN_Links);
+    const int IRValueRechts = digitalRead(IR_PIN_Rechts); 
+
+    digitalWrite(TRIG_PIN, HIGH);       //Ultraschall
+    delay(10);
+    digitalWrite(TRIG_PIN, LOW);
+    duration = pulseIn(ECHO_PIN, HIGH);
+    distance = duration * 0.034 / 2; // hast btw die formel falscxh gehabt du hattest statt '0.034' '0.038'
+
+    Serial.print("\n\n\ndistance: "); // einfach nur zum testen
+    Serial.print(distance);           
+    Serial.print(" cm\nIR-statusLinks: "); 
+    Serial.print(IRValueLinks);            
+    Serial.print(" cm\nIR-statusRechts: "); 
+    Serial.print(IRValueRechts);    
+
+    if (distance > 20 && IRValueLinks == 1 && IRValueRechts == 1) // 'HIGH' einfach '1' und aus 'LOW' '0'
+    {
+       AutoVor();
+    }
+    else if (distance > 20 && IRValueLinks == 0 && IRValueRechts == 1)
+    {
+       AutoRechts();
+    }
+   else if (distance > 20 && IRValueLinks == 1 && IRValueRechts == 0)
+    {
+        AutoLinks();
+    }
+    if (distance < 20)
+    {
+        AutoStop();
+       // Scan();
+    }
+
+}
