@@ -1,8 +1,18 @@
 1. Auto fährt auf linie richtung cam + Intro Name KF 51 Panther
 2. paar Close up shots vom Kurven fahren und Anhalten evtl. auch umfahren
-3. Erklärung Der komponenten
+3. Erklärung Der komponenten 
+3.1 Arduino 
+3.2 Der Ultraschallsensor
+3.3 Servomotor
+3.4 Motoren
+3.5 Motoransteuerung
+3.6 IR-Sensoren 
 4. Code erklären
+4.1 Verschidene Segmente 
 5. Was hätte ich besser machen können/wo lagen grosse probleme
+5.1 Gruppengrösse
+5.2 kabelmangement
+5.3 Nicht beim einführen der neuen Code elemente Krank sein 
 
 
 Schnitt programm davinci Resolve verwenden 
